@@ -81,8 +81,9 @@ const Matriks = (() => {
       const takaran_base = Number(document.getElementById('fBase').value || 0);
       if (!ukuran || (!takaran_bibit && !takaran_base)) return UI.toast('Lengkapi ukuran dan takaran.', 'error');
       try {
-        if (editing) await API.post('updateMatriks', { id_matriks: id, ukuran, kualitas, takaran_bibit, takaran_base });
-        else await API.post('tambahMatriks', { ukuran, kualitas, takaran_bibit, takaran_base });
+        const actor_username = (Auth.getUser() || {}).username || '';
+        if (editing) await API.post('updateMatriks', { id_matriks: id, ukuran, kualitas, takaran_bibit, takaran_base, actor_username });
+        else await API.post('tambahMatriks', { ukuran, kualitas, takaran_bibit, takaran_base, actor_username });
         UI.closeModal();
         await Store.reload();
         renderBody();
