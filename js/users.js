@@ -64,7 +64,7 @@ const Users = (() => {
       const role = document.getElementById('fRole').value;
       if (!username || !password) return UI.toast('Username & password wajib diisi.', 'error');
       try {
-        await API.post('tambahUser', { nama, username, password, role });
+        await API.post('tambahUser', { nama, username, password, role, actor_username: (Auth.getUser() || {}).username || '' });
         UI.closeModal();
         UI.toast('Pengguna baru dibuat.', 'success');
         render();
@@ -86,7 +86,7 @@ const Users = (() => {
       const password = document.getElementById('fPassword').value;
       if (!password) return UI.toast('Isi password baru.', 'error');
       try {
-        await API.post('resetPassword', { id_user, password });
+        await API.post('resetPassword', { id_user, password, actor_username: (Auth.getUser() || {}).username || '' });
         UI.closeModal();
         UI.toast('Password diperbarui.', 'success');
       } catch (e) { UI.toast('Gagal: ' + e.message, 'error'); }
