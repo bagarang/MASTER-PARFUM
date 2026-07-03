@@ -271,7 +271,10 @@ const Kasir = (() => {
         <input type="number" id="payUang" min="0" step="500" value="${total}">
       </label>
       <label class="field"><span>Tanggal transaksi</span>
-        <input type="date" id="payTanggal" value="${UI.todayStr()}">
+        ${Auth.isOwner()
+          ? `<input type="date" id="payTanggal" value="${UI.todayStr()}">`
+          : `<input type="text" value="${UI.todayStr()} (hari ini)" disabled>
+             <input type="hidden" id="payTanggal" value="${UI.todayStr()}">`}
       </label>
       <div class="modal-actions">
         <button class="btn btn-ghost" id="payCancel">Batal</button>
@@ -285,12 +288,13 @@ const Kasir = (() => {
   async function doCheckout() {
     const metode_bayar = document.getElementById('payMetode').value;
     const uang_dibayar = Number(document.getElementById('payUang').value || 0);
-    const tanggal = document.getElementById('payTanggal').value || UI.todayStr();
+    const tanggal = Auth.isOwner() ? (document.getElementById('payTanggal').value || UI.todayStr()) : UI.todayStr();
     const btn = document.getElementById('payConfirm');
     btn.disabled = true; btn.textContent = 'Menyimpan…';
     try {
       const payload = {
         tanggal, metode_bayar, uang_dibayar,
+        actor_username: (Auth.getUser() || {}).username || '',
         kasir: (Auth.getUser() || {}).nama || (Auth.getUser() || {}).username || 'Kasir',
         items: cart.map(c => ({
           jenis: c.jenis, id_produk: c.id_produk || '', nama: c.nama, harga: c.harga, qty: c.qty,
