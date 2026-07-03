@@ -21,13 +21,14 @@ const Stok = (() => {
             <option value="semua">Semua kategori</option>
             ${KATEGORI_LIST.map(k => `<option value="${k}">${cap(k)}</option>`).join('')}
           </select>
-          <button class="btn btn-primary btn-sm" id="btnTambahProduk">+ Produk Baru</button>
+          ${Auth.isOwner() ? `<button class="btn btn-primary btn-sm" id="btnTambahProduk">+ Produk Baru</button>` : ''}
         </div>
       </div>
+      ${Auth.isOwner() ? '' : `<div class="page-sub" style="margin-bottom:12px;">Mode lihat saja &mdash; hanya Owner yang bisa menambah, mengedit, atau mengubah stok.</div>`}
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Produk</th><th>Kategori</th><th>Modal</th><th>Jual</th><th>Sisa Stok</th><th></th>
+            <th>Produk</th><th>Kategori</th><th>Modal</th><th>Jual</th><th>Sisa Stok</th>${Auth.isOwner() ? '<th></th>' : ''}
           </tr></thead>
           <tbody id="stokBody"></tbody>
         </table>
@@ -35,7 +36,7 @@ const Stok = (() => {
     `;
     document.getElementById('stokSearch').addEventListener('input', e => { search = e.target.value.toLowerCase(); renderBody(); });
     document.getElementById('stokFilter').addEventListener('change', e => { filterKategori = e.target.value; renderBody(); });
-    document.getElementById('btnTambahProduk').addEventListener('click', () => openProdukModal(null));
+    if (Auth.isOwner()) document.getElementById('btnTambahProduk').addEventListener('click', () => openProdukModal(null));
     renderBody();
   }
 
@@ -63,17 +64,20 @@ const Stok = (() => {
         <td>${UI.rupiah(p.modal)}</td>
         <td>${UI.rupiah(p.jual)}</td>
         <td>${UI.ml(p.sisa)} ${badge}</td>
+        ${Auth.isOwner() ? `
         <td style="white-space:nowrap;">
           <button class="btn btn-ghost btn-sm" data-adjust="${p.id}">Stok Masuk</button>
           <button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button>
           <button class="btn btn-ghost btn-sm" data-kartu="${p.id}">Kartu Stok</button>
-        </td>
+        </td>` : ''}
       </tr>`;
     }).join('');
 
-    body.querySelectorAll('[data-adjust]').forEach(b => b.onclick = () => openAdjustModal(b.dataset.adjust));
-    body.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openProdukModal(b.dataset.edit));
-    body.querySelectorAll('[data-kartu]').forEach(b => b.onclick = () => openKartuStokModal(b.dataset.kartu));
+    if (Auth.isOwner()) {
+      body.querySelectorAll('[data-adjust]').forEach(b => b.onclick = () => openAdjustModal(b.dataset.adjust));
+      body.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openProdukModal(b.dataset.edit));
+      body.querySelectorAll('[data-kartu]').forEach(b => b.onclick = () => openKartuStokModal(b.dataset.kartu));
+    }
   }
 
   function openProdukModal(id) {
@@ -105,8 +109,9 @@ const Stok = (() => {
       const sisa = Number(document.getElementById('fSisa').value || 0);
       if (!nama) return UI.toast('Nama produk wajib diisi.', 'error');
       try {
-        if (editing) await API.post('editProduk', { id, nama, kategori, modal, jual });
-        else await API.post('tambahProduk', { nama, kategori, modal, jual, sisa });
+        const actor_username = (Auth.getUser() || {}).username || '';
+        if (editing) await API.post('editProduk', { id, nama, kategori, modal, jual, actor_username });
+        else await API.post('tambahProduk', { nama, kategori, modal, jual, sisa, actor_username });
         UI.closeModal();
         await Store.reload();
         renderBody();
@@ -134,7 +139,7 @@ const Stok = (() => {
       const keterangan = document.getElementById('fKet').value.trim() || 'Stok masuk';
       if (!jumlah || jumlah <= 0) return UI.toast('Isi jumlah stok masuk.', 'error');
       try {
-        await API.post('adjustStok', { id_produk: id, jumlah, keterangan });
+        await API.post('adjustStok', { id_produk: id, jumlah, keterangan, actor_username: (Auth.getUser() || {}).username || '' });
         UI.closeModal();
         await Store.reload();
         renderBody();
