@@ -10,7 +10,7 @@ const Kasir = (() => {
 
   function kategoriProdukJadi() {
     // kategori yang dijual langsung di katalog (bukan bahan racikan)
-    return ['botol', 'bukhur', 'pelengkap'];
+    return ['bibit', 'botol', 'bukhur', 'pelengkap'];
   }
 
   function render() {
@@ -87,7 +87,7 @@ const Kasir = (() => {
   }
 
   function renderTabs() {
-    const tabs = [{ k: 'semua', label: 'Semua' }, { k: 'botol', label: 'Botol' }, { k: 'bukhur', label: 'Bukhur' }, { k: 'pelengkap', label: 'Pelengkap' }];
+    const tabs = [{ k: 'semua', label: 'Semua' }, { k: 'bibit', label: 'Bibit' }, { k: 'botol', label: 'Botol' }, { k: 'bukhur', label: 'Bukhur' }, { k: 'pelengkap', label: 'Pelengkap' }];
     document.getElementById('kasirTabs').innerHTML = tabs.map(t =>
       `<button class="kasir-tab ${activeTab === t.k ? 'active' : ''}" data-tab="${t.k}">${t.label}</button>`
     ).join('');
