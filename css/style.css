@@ -125,7 +125,7 @@ a{color:var(--amber);}
 /* =====================================================================
    App shell
    ===================================================================== */
-.app-shell{position:fixed; inset:0; display:flex;}
+.app-shell{position:fixed; inset:0; display:flex; overflow:hidden;}
 .sidebar{
   width:230px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border);
   display:flex; flex-direction:column; padding:20px 16px;
@@ -147,7 +147,7 @@ a{color:var(--amber);}
 .btn-logout{width:100%; background:var(--cream-deep); border:1px solid var(--border); color:var(--ink-soft); padding:8px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;}
 .btn-logout:hover{color:var(--danger); border-color:var(--danger);}
 
-.main{flex:1; display:flex; flex-direction:column; min-width:0;}
+.main{flex:1; display:flex; flex-direction:column; min-width:0; min-height:0;}
 .topbar{
   display:flex; align-items:center; justify-content:space-between;
   padding:16px 26px; border-bottom:1px solid var(--border); background:var(--surface);
