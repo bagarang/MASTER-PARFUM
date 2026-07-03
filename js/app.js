@@ -24,7 +24,7 @@ const Router = (() => {
 
   function go(view) {
     if (!views[view]) view = 'kasir';
-    if ((view === 'users' || view === 'jurnal') && !Auth.isOwner()) view = 'kasir';
+    if ((view === 'users' || view === 'jurnal' || view === 'matriks') && !Auth.isOwner()) view = 'kasir';
     current = view;
     document.getElementById('topbarTitle').textContent = views[view].title;
     document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
@@ -82,6 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('navUsers').style.display = ownerOnly ? '' : 'none';
     document.getElementById('navJurnal').style.display = ownerOnly ? '' : 'none';
     document.getElementById('bnJurnal').style.display = ownerOnly ? '' : 'none';
+    document.getElementById('navMatriks').style.display = ownerOnly ? '' : 'none';
+    document.getElementById('bnMatriks').style.display = ownerOnly ? '' : 'none';
     Router.go('kasir');
   }
 
